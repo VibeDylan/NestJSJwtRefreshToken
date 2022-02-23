@@ -58,7 +58,7 @@ export class AuthService {
     async refreshTokens(userId: number, rt: string) {
         const user = await this.prisma.user.findUnique({
             where: {
-                id: userId      
+                id: userId,
             }
         })
         if(!user) throw new ForbiddenException('Access denied')

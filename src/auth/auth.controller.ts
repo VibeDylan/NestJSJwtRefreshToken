@@ -25,18 +25,21 @@ export class AuthController {
     signInLocal(@Body() dto: AuthDto): Promise<Tokens> {
         return this.authService.signInLocal(dto)
     }
-    
+
+    @Public()
     @Post('logout')
     @HttpCode(HttpStatus.OK)
     logout(@getCurrentUserId() userId: number) {
         return this.authService.logout(userId);
     }
 
+    @Public() // for bypass first 
     @UseGuards(RtGuard)
     @Post('refresh')
     @HttpCode(HttpStatus.OK)
     refreshTokens(@getCurrentUserId() userId: number, @getCurrentUser('refreshToken') refreshToken: string) {
-        return this.authService.refreshTokens(userId, refreshToken);
+        console.log(refreshToken)
+        return this.authService.refreshTokens(userId['sub'], refreshToken);
     }
 
 }
