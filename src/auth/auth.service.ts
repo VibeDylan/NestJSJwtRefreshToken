@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +10,7 @@ import { totalmem } from 'os';
 export class AuthService {
 
     constructor(private prisma: PrismaService, private jwtService: JwtService) { }
-    
+
     async signUpLocal(dto: AuthDto): Promise<Tokens> {
         const hash = await this.hashData(dto.password)
         const newUser = await this.prisma.user.create({
@@ -19,13 +19,27 @@ export class AuthService {
                 hash,
             }
         });
-        
+
         const tokens = await this.getTokens(newUser.id, newUser.email);
         await this.updateRtHash(newUser.id, tokens.refresh_token);
         return tokens;
     }
 
-    signInLocal() { }
+    async signInLocal(dto: AuthDto): Promise<Tokens> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email
+            }
+        })
+        if (!user) throw new ForbiddenException("Access denied")
+
+        const passwordMatches = await bcrypt.compare(dto.password, user.hash)
+        if (!passwordMatches) throw new ForbiddenException("Acces denied")
+
+        const tokens = await this.getTokens(user.id, user.email);
+        await this.updateRtHash(user.id, tokens.refresh_token);
+        return tokens;
+    }
 
     logout() { }
 
@@ -47,7 +61,7 @@ export class AuthService {
         return bcrypt.hash(data, 10)
     }
 
-    async getTokens(userId: number, email: string): Promise<Tokens>  {
+    async getTokens(userId: number, email: string): Promise<Tokens> {
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync({
                 sub: userId,
