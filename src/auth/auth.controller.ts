@@ -21,11 +21,13 @@ export class AuthController {
     }
 
     @Post('logout')
+    @HttpCode(HttpStatus.OK)
     logout() {
         // return this.authService.logout()
     }
 
     @Post('refresh')
+    @HttpCode(HttpStatus.OK)
     refreshTokens() {
         this.authService.refreshTokens()
     }
