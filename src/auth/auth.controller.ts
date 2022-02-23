@@ -1,6 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { getCurrentUser } from 'src/common/decorator';
 import { AtGuard, RtGuard } from 'src/common/guards';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
@@ -26,9 +27,8 @@ export class AuthController {
     @UseGuards(AtGuard)
     @Post('logout')
     @HttpCode(HttpStatus.OK)
-    logout(@Req() req: Request) {
-        const user = req.user;
-        return this.authService.logout(user['sub']);
+    logout(@getCurrentUser('sub') userId: number) {
+        return this.authService.logout(userId);
     }
 
     @UseGuards(RtGuard)
