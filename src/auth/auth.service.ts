@@ -4,7 +4,6 @@ import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
-import { totalmem } from 'os';
 
 @Injectable()
 export class AuthService {
