@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 
+
 @Injectable()
 export class AuthService {
 
@@ -15,6 +16,7 @@ export class AuthService {
         const newUser = await this.prisma.user.create({
             data: {
                 email: dto.email,
+                fullsname: dto.fullname,
                 hash,
             }
         });
@@ -23,7 +25,7 @@ export class AuthService {
         await this.updateRtHash(newUser.id, tokens.refresh_token);
         return tokens;
     }
-
+    
     async signInLocal(dto: AuthDto): Promise<Tokens> {
         const user = await this.prisma.user.findUnique({
             where: {
