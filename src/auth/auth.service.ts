@@ -105,7 +105,7 @@ export class AuthService {
                 email,
             }, {
                 secret: 'at-secret',
-                expiresIn: 60 * 15,
+                expiresIn: 60 * 5,
             }),
 
             this.jwtService.signAsync({
