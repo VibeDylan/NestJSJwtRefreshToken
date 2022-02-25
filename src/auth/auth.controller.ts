@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { getCurrentUser, getCurrentUserId, Public } from 'src/common/decorator';
 import { RtGuard } from 'src/common/guards';
 import { AuthService } from './auth.service';
@@ -38,6 +38,12 @@ export class AuthController {
     refreshTokens(@getCurrentUserId() userId: number, @getCurrentUser('refreshToken') refreshToken: string) {
         console.log(refreshToken)
         return this.authService.refreshTokens(userId['sub'], refreshToken);
+    }
+
+    @Public()
+    @Get('user')
+    getUser(@getCurrentUser() userId: number) {
+        return this.authService.getUser(userId);
     }
 
 }

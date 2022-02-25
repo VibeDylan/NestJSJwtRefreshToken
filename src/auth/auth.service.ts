@@ -56,6 +56,16 @@ export class AuthService {
         })
     }
 
+    async getUser(userId: number) {
+        const result = await this.prisma.user.findMany({
+            where: {
+                id: userId
+            }
+        })
+
+        return result;
+    }
+
     async refreshTokens(userId: number, rt: string) {
         const user = await this.prisma.user.findUnique({
             where: {
